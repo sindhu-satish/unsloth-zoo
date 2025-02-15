@@ -374,7 +374,7 @@ class UnslothVisionDataCollator:
         print("texts ", texts)
         batch = self.processor(
                 text    = texts,
-                videos  = videos[0],
+                videos  = videos,
                 padding = True,
                 # [TODO] Truncating to max_seq_length does NOT work for VLMs
                 # truncation = True,
