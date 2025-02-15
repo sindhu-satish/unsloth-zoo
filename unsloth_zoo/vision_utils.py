@@ -372,6 +372,12 @@ class UnslothVisionDataCollator:
         print(isinstance(videos[0][0], Image.Image))
         print("videos ", videos)
         print("texts ", texts)
+
+        if isinstance(videos, list):
+            videos = torch.stack([torch.tensor(frame) for frame in videos])  # Ensure tensor format
+
+        if videos.shape[1] != 3:  # Ensure channels-first format
+            videos = videos.permute(0, 3, 1, 2) 
         batch = self.processor(
                 text    = texts,
                 videos  = videos,
