@@ -748,9 +748,12 @@ def process_vision_info(
     video_inputs = []
     video_sample_fps_list = []
     for vision_info in vision_infos:
+        print("vision_info ")
         if "image" in vision_info or "image_url" in vision_info:
+            print("fetch image")
             image_inputs.append(fetch_image(vision_info))
         elif "video" in vision_info:
+            print("fetch video")
             video_input, video_sample_fps = fetch_video(vision_info, return_video_sample_fps=True)
             video_sample_fps_list.append(video_sample_fps)
             video_inputs.append(video_input)
