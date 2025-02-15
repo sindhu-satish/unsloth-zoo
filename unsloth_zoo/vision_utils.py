@@ -50,6 +50,7 @@ IMAGE_TOKENS = [
 import torch
 from PIL import Image
 import base64
+import cv2
 from io import BytesIO
 import math
 import requests
@@ -159,6 +160,40 @@ def fetch_image(ele: dict[Union[Tuple[str, str], Image.Image]], size_factor: int
     return image
 pass
 
+def fetch_video(ele: dict, size_factor: int = FRAME_FACTOR, fps: float = FPS) -> list[Image.Image]:
+    if "video" in ele:
+        video_path = ele["video"]
+    else:
+        video_path = ele["video_url"]
+
+    if video_path.startswith("http://") or video_path.startswith("https://"):
+        video_data = requests.get(video_path, stream=True).content
+        video_path = BytesIO(video_data)
+    
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        raise ValueError(f"Unable to open video file: {video_path}")
+
+    frames = []
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    frame_rate = cap.get(cv2.CAP_PROP_FPS)
+    frame_interval = int(frame_rate / fps)
+
+    for i in range(frame_count):
+        ret, frame = cap.read()
+        if not ret:
+            break
+        if i % frame_interval == 0:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            pil_image = Image.fromarray(frame)
+            frames.append(pil_image)
+
+    cap.release()
+
+    if len(frames) == 0:
+        raise ValueError("No frames extracted from video")
+
+    return frames
 
 def extract_vision_info(conversations: Union[list[dict], list[list[dict]]]) -> list[dict]:
     vision_infos = []
