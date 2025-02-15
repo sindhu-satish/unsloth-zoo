@@ -349,6 +349,10 @@ class UnslothVisionDataCollator:
             )
             batch.pop("token_type_ids", None)
         
+        print(isinstance(videos, (list, tuple)))
+        print(isinstance(videos[0], (list, tuple)))
+        print(isinstance(videos[0][0], Image.Image))
+        
         # Pixtral accepts multiple images, so we have to cast it individually
         pixel_values = batch["pixel_values"]
         if type(pixel_values) is list:
