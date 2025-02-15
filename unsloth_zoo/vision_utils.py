@@ -371,6 +371,7 @@ class UnslothVisionDataCollator:
         print(isinstance(videos[0], (list, tuple)))
         print(isinstance(videos[0][0], Image.Image))
         print("videos ", videos)
+        print("texts ", texts)
         batch = self.processor(
                 text    = texts,
                 videos  = videos[0],
