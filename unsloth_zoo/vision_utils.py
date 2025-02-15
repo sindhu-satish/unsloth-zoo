@@ -318,7 +318,15 @@ class UnslothVisionDataCollator:
             images.append(image)
             videos.append(video)
         pass
-        
+        batch = self.processor(
+                text    = texts,
+                videos  = videos,
+                padding = True,
+                # [TODO] Truncating to max_seq_length does NOT work for VLMs
+                # truncation = True,
+                return_tensors = "pt",
+            )
+        batch.pop("token_type_ids", None)
         if "images" in example:
         # Tokenize the texts and process the images
             batch = self.processor(
