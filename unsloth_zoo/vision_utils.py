@@ -262,26 +262,26 @@ def extract_vision_info(conversations: Union[list[dict], list[list[dict]]]) -> l
 pass
 
 
-def process_vision_info(
-    conversations: Union[list[dict], list[list[dict]]],
-) -> tuple[Union[list[Image.Image], None], Union[list[Union[torch.Tensor, list[Image.Image]]], None]]:
-    vision_infos = extract_vision_info(conversations)
-    ## Read images or videos
-    image_inputs = []
-    video_inputs = []
-    for vision_info in vision_infos:
-        if "image" in vision_info or "image_url" in vision_info:
-            image_inputs.append(fetch_image(vision_info))
-        elif "video" in vision_info:
-            video_inputs.append(fetch_video(vision_info))
-        else:
-            raise ValueError("image, image_url or video should in content.")
-    if len(image_inputs) == 0:
-        image_inputs = None
-    if len(video_inputs) == 0:
-        video_inputs = None
-    return image_inputs, video_inputs
-pass
+# def process_vision_info(
+#     conversations: Union[list[dict], list[list[dict]]],
+# ) -> tuple[Union[list[Image.Image], None], Union[list[Union[torch.Tensor, list[Image.Image]]], None]]:
+#     vision_infos = extract_vision_info(conversations)
+#     ## Read images or videos
+#     image_inputs = []
+#     video_inputs = []
+#     for vision_info in vision_infos:
+#         if "image" in vision_info or "image_url" in vision_info:
+#             image_inputs.append(fetch_image(vision_info))
+#         elif "video" in vision_info:
+#             video_inputs.append(fetch_video(vision_info))
+#         else:
+#             raise ValueError("image, image_url or video should in content.")
+#     if len(image_inputs) == 0:
+#         image_inputs = None
+#     if len(video_inputs) == 0:
+#         video_inputs = None
+#     return image_inputs, video_inputs
+# pass
 
 
 def get_padding_tokens_ids(tokenizer):
@@ -370,7 +370,7 @@ class UnslothVisionDataCollator:
         print(isinstance(videos, (list, tuple)))
         print(isinstance(videos[0], (list, tuple)))
         print(isinstance(videos[0][0], Image.Image))
-        print("videos ", video)
+        print("videos ", videos)
         batch = self.processor(
                 text    = texts,
                 videos  = videos,
