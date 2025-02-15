@@ -28,92 +28,92 @@
 # # See the License for the specific language governing permissions and
 # # limitations under the License.
 
-# __all__ = [
-#     "process_vision_info",
-#     "UnslothVisionDataCollator",
-# ]
+__all__ = [
+    "process_vision_info",
+    "UnslothVisionDataCollator",
+]
 
 # global IMAGE_TOKENS
-# IMAGE_TOKENS = [
-#     "<|image|>",        # Llama 3.2 Vision, Phi 3.5
-#     "<|vision_start|>", # Qwen
-#     "<|vision_end|>",   # Qwen
-#     "<|vision_pad|>",   # Qwen
-#     "<|image_pad|>",    # Qwen
-#     "<|video_pad|>",    # Qwen
-#     "<image>",          # PaliGemma / Llava
-#     "[IMG]",            # Mistral
-#     "[IMG_BREAK]",      # Mistral
-#     "[IMG_END]",        # Mistral
-# ]
+IMAGE_TOKENS = [
+    "<|image|>",        # Llama 3.2 Vision, Phi 3.5
+    "<|vision_start|>", # Qwen
+    "<|vision_end|>",   # Qwen
+    "<|vision_pad|>",   # Qwen
+    "<|image_pad|>",    # Qwen
+    "<|video_pad|>",    # Qwen
+    "<image>",          # PaliGemma / Llava
+    "[IMG]",            # Mistral
+    "[IMG_BREAK]",      # Mistral
+    "[IMG_END]",        # Mistral
+]
 
-# import torch
-# from PIL import Image
-# import base64
-# import cv2
-# from io import BytesIO
-# import math
-# import requests
-# from typing import Union, Tuple
-# IMAGE_FACTOR = 28
-# MIN_PIXELS = 4 * 28 * 28
-# MAX_PIXELS = 16384 * 28 * 28
-# MAX_RATIO = 200
-# from qwen_vl_utils import process_vision_info
+import torch
+from PIL import Image
+import base64
+import cv2
+from io import BytesIO
+import math
+import requests
+from typing import Union, Tuple
+IMAGE_FACTOR = 28
+MIN_PIXELS = 4 * 28 * 28
+MAX_PIXELS = 16384 * 28 * 28
+MAX_RATIO = 200
+from qwen_vl_utils import process_vision_info
 
-# VIDEO_MIN_PIXELS = 128 * 28 * 28
-# VIDEO_MAX_PIXELS = 768 * 28 * 28
-# VIDEO_TOTAL_PIXELS = 24576 * 28 * 28
-# FRAME_FACTOR = 2
-# FPS = 2.0
-# FPS_MIN_FRAMES = 4
-# FPS_MAX_FRAMES = 768
-
-
-# def round_by_factor(number: int, factor: int) -> int:
-#     """Returns the closest integer to 'number' that is divisible by 'factor'."""
-#     return round(number / factor) * factor
-# pass
-
-# def ceil_by_factor(number: int, factor: int) -> int:
-#     """Returns the smallest integer greater than or equal to 'number' that is divisible by 'factor'."""
-#     return math.ceil(number / factor) * factor
-# pass
-
-# def floor_by_factor(number: int, factor: int) -> int:
-#     """Returns the largest integer less than or equal to 'number' that is divisible by 'factor'."""
-#     return math.floor(number / factor) * factor
-# pass
+VIDEO_MIN_PIXELS = 128 * 28 * 28
+VIDEO_MAX_PIXELS = 768 * 28 * 28
+VIDEO_TOTAL_PIXELS = 24576 * 28 * 28
+FRAME_FACTOR = 2
+FPS = 2.0
+FPS_MIN_FRAMES = 4
+FPS_MAX_FRAMES = 768
 
 
-# def smart_resize(
-#     height: int, width: int, factor: int = IMAGE_FACTOR, min_pixels: int = MIN_PIXELS, max_pixels: int = MAX_PIXELS
-# ) -> tuple[int, int]:
-#     """
-#     Rescales the image so that the following conditions are met:
+def round_by_factor(number: int, factor: int) -> int:
+    """Returns the closest integer to 'number' that is divisible by 'factor'."""
+    return round(number / factor) * factor
+pass
 
-#     1. Both dimensions (height and width) are divisible by 'factor'.
+def ceil_by_factor(number: int, factor: int) -> int:
+    """Returns the smallest integer greater than or equal to 'number' that is divisible by 'factor'."""
+    return math.ceil(number / factor) * factor
+pass
 
-#     2. The total number of pixels is within the range ['min_pixels', 'max_pixels'].
+def floor_by_factor(number: int, factor: int) -> int:
+    """Returns the largest integer less than or equal to 'number' that is divisible by 'factor'."""
+    return math.floor(number / factor) * factor
+pass
 
-#     3. The aspect ratio of the image is maintained as closely as possible.
-#     """
-#     if max(height, width) / min(height, width) > MAX_RATIO:
-#         raise ValueError(
-#             f"absolute aspect ratio must be smaller than {MAX_RATIO}, got {max(height, width) / min(height, width)}"
-#         )
-#     h_bar = max(factor, round_by_factor(height, factor))
-#     w_bar = max(factor, round_by_factor(width, factor))
-#     if h_bar * w_bar > max_pixels:
-#         beta = math.sqrt((height * width) / max_pixels)
-#         h_bar = floor_by_factor(height / beta, factor)
-#         w_bar = floor_by_factor(width / beta, factor)
-#     elif h_bar * w_bar < min_pixels:
-#         beta = math.sqrt(min_pixels / (height * width))
-#         h_bar = ceil_by_factor(height * beta, factor)
-#         w_bar = ceil_by_factor(width * beta, factor)
-#     return h_bar, w_bar
-# pass
+
+def smart_resize(
+    height: int, width: int, factor: int = IMAGE_FACTOR, min_pixels: int = MIN_PIXELS, max_pixels: int = MAX_PIXELS
+) -> tuple[int, int]:
+    """
+    Rescales the image so that the following conditions are met:
+
+    1. Both dimensions (height and width) are divisible by 'factor'.
+
+    2. The total number of pixels is within the range ['min_pixels', 'max_pixels'].
+
+    3. The aspect ratio of the image is maintained as closely as possible.
+    """
+    if max(height, width) / min(height, width) > MAX_RATIO:
+        raise ValueError(
+            f"absolute aspect ratio must be smaller than {MAX_RATIO}, got {max(height, width) / min(height, width)}"
+        )
+    h_bar = max(factor, round_by_factor(height, factor))
+    w_bar = max(factor, round_by_factor(width, factor))
+    if h_bar * w_bar > max_pixels:
+        beta = math.sqrt((height * width) / max_pixels)
+        h_bar = floor_by_factor(height / beta, factor)
+        w_bar = floor_by_factor(width / beta, factor)
+    elif h_bar * w_bar < min_pixels:
+        beta = math.sqrt(min_pixels / (height * width))
+        h_bar = ceil_by_factor(height * beta, factor)
+        w_bar = ceil_by_factor(width * beta, factor)
+    return h_bar, w_bar
+pass
 
 
 # # def fetch_image(ele: dict[Union[Tuple[str, str], Image.Image]], size_factor: int = IMAGE_FACTOR) -> Image.Image:
@@ -237,144 +237,146 @@
 # # pass
 
 
-# def get_padding_tokens_ids(tokenizer):
-#     global IMAGE_TOKENS
+def get_padding_tokens_ids(tokenizer):
+    global IMAGE_TOKENS
 
-#     tokenizer = tokenizer.tokenizer if hasattr(tokenizer, "tokenizer") else tokenizer
-#     image_tokens = IMAGE_TOKENS
-#     if hasattr(tokenizer, "image_token"):
-#         image_tokens = IMAGE_TOKENS + [tokenizer.image_token]
-#     pass
+    tokenizer = tokenizer.tokenizer if hasattr(tokenizer, "tokenizer") else tokenizer
+    image_tokens = IMAGE_TOKENS
+    if hasattr(tokenizer, "image_token"):
+        image_tokens = IMAGE_TOKENS + [tokenizer.image_token]
+    pass
 
-#     padding_token_ids = tokenizer.convert_tokens_to_ids(image_tokens)
-#     if hasattr(tokenizer, "pad_token_id"):
-#         padding_token_ids.append(tokenizer.pad_token_id)
-#     pass
+    padding_token_ids = tokenizer.convert_tokens_to_ids(image_tokens)
+    if hasattr(tokenizer, "pad_token_id"):
+        padding_token_ids.append(tokenizer.pad_token_id)
+    pass
 
-#     padding_token_ids = list(filter(None, padding_token_ids))
-#     padding_token_ids = list(set(padding_token_ids))
-#     padding_token_ids = torch.IntTensor(padding_token_ids)
-#     return padding_token_ids
-# pass
-
-
-# def _get_dtype(dtype):
-#     __DTYPE_MAP = {
-#         "float32": torch.float32,
-#         torch.float32: torch.float32,
-#         "float16": torch.float16,
-#         torch.float16: torch.float16,
-#         "bfloat16": torch.bfloat16,
-#         torch.bfloat16: torch.bfloat16,
-#     }
-#     if   dtype is None or dtype == None: return None
-#     elif dtype in __DTYPE_MAP: return __DTYPE_MAP[dtype]
-#     else:
-#         print(f"Unsloth: {dtype} is not recognized, so we'll default to None")
-#         return None
-#     pass
-# pass
+    padding_token_ids = list(filter(None, padding_token_ids))
+    padding_token_ids = list(set(padding_token_ids))
+    padding_token_ids = torch.IntTensor(padding_token_ids)
+    return padding_token_ids
+pass
 
 
-# class UnslothVisionDataCollator:
-#     # All Unsloth Zoo code licensed under LGPLv3
-#     __slots__ = "padding_token_ids", "dtype", "ignore_index", "processor", "formatting_func"
+def _get_dtype(dtype):
+    __DTYPE_MAP = {
+        "float32": torch.float32,
+        torch.float32: torch.float32,
+        "float16": torch.float16,
+        torch.float16: torch.float16,
+        "bfloat16": torch.bfloat16,
+        torch.bfloat16: torch.bfloat16,
+    }
+    if   dtype is None or dtype == None: return None
+    elif dtype in __DTYPE_MAP: return __DTYPE_MAP[dtype]
+    else:
+        print(f"Unsloth: {dtype} is not recognized, so we'll default to None")
+        return None
+    pass
+pass
 
-#     def __init__(self, model, processor, formatting_func = None, ignore_index = -100):
-#         self.padding_token_ids = get_padding_tokens_ids(processor)
-#         self.dtype = _get_dtype(
-#             model.config.torch_dtype \
-#             if hasattr(model.config, "torch_dtype") else \
-#             model.get_input_embeddings().weight.dtype
-#         )
-#         self.ignore_index = ignore_index
-#         self.processor = processor
-#         self.formatting_func = formatting_func
-#         return
-#     pass
 
-#     def __call__(self, examples):
-#         # [TODO] Support non image inputs as well
-#         # The issue is batch = self.processor( forces tensors to be returned and not None.
-#         texts  = []
-#         images = []
+class UnslothVisionDataCollator:
+    # All Unsloth Zoo code licensed under LGPLv3
+    __slots__ = "padding_token_ids", "dtype", "ignore_index", "processor", "formatting_func"
+
+    def __init__(self, model, processor, formatting_func = None, ignore_index = -100):
+        self.padding_token_ids = get_padding_tokens_ids(processor)
+        self.dtype = _get_dtype(
+            model.config.torch_dtype \
+            if hasattr(model.config, "torch_dtype") else \
+            model.get_input_embeddings().weight.dtype
+        )
+        self.ignore_index = ignore_index
+        self.processor = processor
+        self.formatting_func = formatting_func
+        return
+    pass
+
+    def __call__(self, examples):
+        # [TODO] Support non image inputs as well
+        # The issue is batch = self.processor( forces tensors to be returned and not None.
+        texts  = []
+        images = []
+        videos = []
         
-#         if self.formatting_func is not None:
-#             examples = [self.formatting_func(example) for example in examples]
+        if self.formatting_func is not None:
+            examples = [self.formatting_func(example) for example in examples]
         
-#         for example in examples:    
-#             messages = example["messages"]
-#             message = self.processor.apply_chat_template(
-#                 messages,
-#                 tokenize = False,
-#                 add_generation_prompt = False,
-#             )
-#             # Dataset with 2 columns messages / images
-#             if "images" in example:
-#                 image = example["images"][0]
-#             else:
-#                 image, video = process_vision_info(messages)
-#             texts .append(message)
-#             images.append(image)
+        for example in examples:    
+            messages = example["messages"]
+            message = self.processor.apply_chat_template(
+                messages,
+                tokenize = False,
+                add_generation_prompt = False,
+            )
+            # Dataset with 2 columns messages / images
+            if "images" in example:
+                image = example["images"][0]
+            else:
+                image, video = process_vision_info(messages)
+            texts .append(message)
+            images.append(image)
+            videos.append(video)
             
-#         pass
-#         print(isinstance(video, (list, tuple)))
-#         print(isinstance(video[0], (list, tuple)))
-#         print(isinstance(video[0][0], Image.Image))
-#         print("videos ", video)
-#         batch = self.processor(
-#                 text    = texts,
-#                 videos  = [video],
-#                 padding = True,
-#                 # [TODO] Truncating to max_seq_length does NOT work for VLMs
-#                 # truncation = True,
-#                 return_tensors = "pt",
-#             )
-#         batch.pop("token_type_ids", None)
-#         if "images" in example:
-#         # Tokenize the texts and process the images
-#             batch = self.processor(
-#                 text    = texts,
-#                 images  = images,
-#                 padding = True,
-#                 # [TODO] Truncating to max_seq_length does NOT work for VLMs
-#                 # truncation = True,
-#                 return_tensors = "pt",
-#             )
-#             batch.pop("token_type_ids", None)
-#         elif "videos" in example:
-#             batch = self.processor(
-#                 text    = texts,
-#                 videos  = [video],
-#                 padding = True,
-#                 # [TODO] Truncating to max_seq_length does NOT work for VLMs
-#                 # truncation = True,
-#                 return_tensors = "pt",
-#             )
-#             batch.pop("token_type_ids", None)
+        pass
+        print(isinstance(videos, (list, tuple)))
+        print(isinstance(videos[0], (list, tuple)))
+        print(isinstance(videos[0][0], Image.Image))
+        print("videos ", video)
+        batch = self.processor(
+                text    = texts,
+                videos  = videos,
+                padding = True,
+                # [TODO] Truncating to max_seq_length does NOT work for VLMs
+                # truncation = True,
+                return_tensors = "pt",
+            )
+        batch.pop("token_type_ids", None)
+        if "images" in example:
+        # Tokenize the texts and process the images
+            batch = self.processor(
+                text    = texts,
+                images  = images,
+                padding = True,
+                # [TODO] Truncating to max_seq_length does NOT work for VLMs
+                # truncation = True,
+                return_tensors = "pt",
+            )
+            batch.pop("token_type_ids", None)
+        elif "videos" in example:
+            batch = self.processor(
+                text    = texts,
+                videos  = videos,
+                padding = True,
+                # [TODO] Truncating to max_seq_length does NOT work for VLMs
+                # truncation = True,
+                return_tensors = "pt",
+            )
+            batch.pop("token_type_ids", None)
         
-#         # Pixtral accepts multiple images, so we have to cast it individually
-#         pixel_values = batch["pixel_values"]
-#         if type(pixel_values) is list:
-#             for j, pixel_value_j in enumerate(pixel_values):
-#                 if type(pixel_value_j) is list:
-#                     for k, pixel_value_k in enumerate(pixel_value_j):
-#                         pixel_value_j[k] = pixel_value_k.to(self.dtype)
-#                 else:
-#                     pixel_values[j] = pixel_value_j.to(self.dtype)
-#             pass
-#             batch["pixel_values"] = pixel_values
-#         else:
-#             batch["pixel_values"] = batch["pixel_values"].to(self.dtype)
-#         pass
+        # Pixtral accepts multiple images, so we have to cast it individually
+        pixel_values = batch["pixel_values"]
+        if type(pixel_values) is list:
+            for j, pixel_value_j in enumerate(pixel_values):
+                if type(pixel_value_j) is list:
+                    for k, pixel_value_k in enumerate(pixel_value_j):
+                        pixel_value_j[k] = pixel_value_k.to(self.dtype)
+                else:
+                    pixel_values[j] = pixel_value_j.to(self.dtype)
+            pass
+            batch["pixel_values"] = pixel_values
+        else:
+            batch["pixel_values"] = batch["pixel_values"].to(self.dtype)
+        pass
 
-#         # Mask image tokens and pad tokens
-#         labels = batch["input_ids"].clone()
-#         labels[torch.isin(labels, self.padding_token_ids)] = self.ignore_index
-#         batch["labels"] = labels
-#         return batch
-#     pass
-# pass
+        # Mask image tokens and pad tokens
+        labels = batch["input_ids"].clone()
+        labels[torch.isin(labels, self.padding_token_ids)] = self.ignore_index
+        batch["labels"] = labels
+        return batch
+    pass
+pass
 
 from __future__ import annotations
 
