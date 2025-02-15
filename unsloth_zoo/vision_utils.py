@@ -63,7 +63,7 @@ IMAGE_FACTOR = 28
 MIN_PIXELS = 4 * 28 * 28
 MAX_PIXELS = 16384 * 28 * 28
 MAX_RATIO = 200
-from qwen_vl_utils import process_vision_info
+# from qwen_vl_utils import process_vision_info
 
 VIDEO_MIN_PIXELS = 128 * 28 * 28
 VIDEO_MAX_PIXELS = 768 * 28 * 28
