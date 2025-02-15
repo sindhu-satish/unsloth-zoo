@@ -47,6 +47,8 @@ IMAGE_TOKENS = [
     "[IMG_END]",        # Mistral
 ]
 
+from __future__ import annotations
+
 import torch
 from PIL import Image
 import base64
@@ -69,7 +71,7 @@ FPS = 2.0
 FPS_MIN_FRAMES = 4
 FPS_MAX_FRAMES = 768
 
-from __future__ import annotations
+
 
 import base64
 import logging
