@@ -297,7 +297,6 @@ class UnslothVisionDataCollator:
         # The issue is batch = self.processor( forces tensors to be returned and not None.
         texts  = []
         images = []
-        videos = []
         
         if self.formatting_func is not None:
             examples = [self.formatting_func(example) for example in examples]
@@ -316,15 +315,15 @@ class UnslothVisionDataCollator:
                 image, video = process_vision_info(messages)
             texts .append(message)
             images.append(image)
-            videos.append(video)
+            
         pass
-        print(isinstance(videos, (list, tuple)))
-        print(isinstance(videos[0], (list, tuple)))
-        print(isinstance(videos[0][0], Image.Image))
-        print("videos ", videos)
+        print(isinstance(video, (list, tuple)))
+        print(isinstance(video[0], (list, tuple)))
+        print(isinstance(video[0][0], Image.Image))
+        print("videos ", video)
         batch = self.processor(
                 text    = texts,
-                videos  = videos,
+                videos  = video,
                 padding = True,
                 # [TODO] Truncating to max_seq_length does NOT work for VLMs
                 # truncation = True,
@@ -345,7 +344,7 @@ class UnslothVisionDataCollator:
         elif "videos" in example:
             batch = self.processor(
                 text    = texts,
-                videos  = videos,
+                videos  = video,
                 padding = True,
                 # [TODO] Truncating to max_seq_length does NOT work for VLMs
                 # truncation = True,
