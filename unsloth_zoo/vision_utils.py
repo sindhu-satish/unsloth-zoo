@@ -69,6 +69,49 @@ FPS = 2.0
 FPS_MIN_FRAMES = 4
 FPS_MAX_FRAMES = 768
 
+from __future__ import annotations
+
+import base64
+import logging
+import math
+import os
+import sys
+import time
+import warnings
+from functools import lru_cache
+from io import BytesIO
+
+import requests
+import torch
+import torchvision
+from packaging import version
+from PIL import Image
+from torchvision import io, transforms
+from torchvision.transforms import InterpolationMode
+from typing import Optional
+
+
+logger = logging.getLogger(__name__)
+
+IMAGE_FACTOR = 28
+MIN_PIXELS = 4 * 28 * 28
+MAX_PIXELS = 16384 * 28 * 28
+MAX_RATIO = 200
+
+VIDEO_MIN_PIXELS = 128 * 28 * 28
+VIDEO_MAX_PIXELS = 768 * 28 * 28
+FRAME_FACTOR = 2
+FPS = 2.0
+FPS_MIN_FRAMES = 4
+FPS_MAX_FRAMES = 768
+
+# Set the maximum number of video token inputs.
+# Here, 128K represents the maximum number of input tokens for the VLLM model.
+# Remember to adjust it according to your own configuration.
+VIDEO_TOTAL_PIXELS = int(float(os.environ.get('VIDEO_MAX_PIXELS', 128000 * 28 * 28 * 0.9)))
+logger.info(f"set VIDEO_TOTAL_PIXELS: {VIDEO_TOTAL_PIXELS}")
+
+
 
 def round_by_factor(number: int, factor: int) -> int:
     """Returns the closest integer to 'number' that is divisible by 'factor'."""
@@ -378,47 +421,6 @@ class UnslothVisionDataCollator:
     pass
 pass
 
-from __future__ import annotations
-
-import base64
-import logging
-import math
-import os
-import sys
-import time
-import warnings
-from functools import lru_cache
-from io import BytesIO
-
-import requests
-import torch
-import torchvision
-from packaging import version
-from PIL import Image
-from torchvision import io, transforms
-from torchvision.transforms import InterpolationMode
-from typing import Optional
-
-
-logger = logging.getLogger(__name__)
-
-IMAGE_FACTOR = 28
-MIN_PIXELS = 4 * 28 * 28
-MAX_PIXELS = 16384 * 28 * 28
-MAX_RATIO = 200
-
-VIDEO_MIN_PIXELS = 128 * 28 * 28
-VIDEO_MAX_PIXELS = 768 * 28 * 28
-FRAME_FACTOR = 2
-FPS = 2.0
-FPS_MIN_FRAMES = 4
-FPS_MAX_FRAMES = 768
-
-# Set the maximum number of video token inputs.
-# Here, 128K represents the maximum number of input tokens for the VLLM model.
-# Remember to adjust it according to your own configuration.
-VIDEO_TOTAL_PIXELS = int(float(os.environ.get('VIDEO_MAX_PIXELS', 128000 * 28 * 28 * 0.9)))
-logger.info(f"set VIDEO_TOTAL_PIXELS: {VIDEO_TOTAL_PIXELS}")
 
 
 def round_by_factor(number: int, factor: int) -> int:
