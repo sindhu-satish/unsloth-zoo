@@ -297,6 +297,7 @@ class UnslothVisionDataCollator:
         # The issue is batch = self.processor( forces tensors to be returned and not None.
         texts  = []
         images = []
+        videos = []
         
         if self.formatting_func is not None:
             examples = [self.formatting_func(example) for example in examples]
@@ -315,18 +316,30 @@ class UnslothVisionDataCollator:
                 image, video = process_vision_info(messages)
             texts .append(message)
             images.append(image)
+            videos.append(video)
         pass
-
+        
+        if "images" in example:
         # Tokenize the texts and process the images
-        batch = self.processor(
-            text    = texts,
-            images  = images,
-            padding = True,
-            # [TODO] Truncating to max_seq_length does NOT work for VLMs
-            # truncation = True,
-            return_tensors = "pt",
-        )
-        batch.pop("token_type_ids", None)
+            batch = self.processor(
+                text    = texts,
+                images  = images,
+                padding = True,
+                # [TODO] Truncating to max_seq_length does NOT work for VLMs
+                # truncation = True,
+                return_tensors = "pt",
+            )
+            batch.pop("token_type_ids", None)
+        elif "videos" in example:
+            batch = self.processor(
+                text    = texts,
+                videos  = videos,
+                padding = True,
+                # [TODO] Truncating to max_seq_length does NOT work for VLMs
+                # truncation = True,
+                return_tensors = "pt",
+            )
+            batch.pop("token_type_ids", None)
         
         # Pixtral accepts multiple images, so we have to cast it individually
         pixel_values = batch["pixel_values"]
