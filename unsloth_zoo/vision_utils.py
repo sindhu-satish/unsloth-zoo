@@ -662,6 +662,7 @@ def get_video_reader_backend() -> str:
 
 def fetch_video(ele: dict, image_factor: int = IMAGE_FACTOR, return_video_sample_fps: bool = False) -> torch.Tensor | list[Image.Image]:
     if isinstance(ele["video"], str):
+        print("call reader")
         video_reader_backend = get_video_reader_backend()
         try:
             video, sample_fps = VIDEO_READER_BACKENDS[video_reader_backend](ele)
@@ -699,6 +700,7 @@ def fetch_video(ele: dict, image_factor: int = IMAGE_FACTOR, return_video_sample
         ).float()
         if return_video_sample_fps:
             return video, sample_fps
+        print("return video")
         return video
     else:
         assert isinstance(ele["video"], (list, tuple))
